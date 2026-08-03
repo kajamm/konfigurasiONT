@@ -19,28 +19,130 @@ window.onload = () => {
   auto.addEventListener("change", autofillPassword);
 };
 
-// Dinamis input berdasarkan brand
+// Elements
 const brandSelect = document.getElementById("brand");
 const dynamicFields = document.getElementById("dynamicFields");
+const formContent = document.getElementById("formContent");
+const fspInput = document.getElementById("fsp");
+const fspHint = document.getElementById("fspHint");
+const brandTiles = document.querySelectorAll(".brand-tile");
 
+// Brand Tile Click Listener
+brandTiles.forEach(tile => {
+  tile.addEventListener("click", () => {
+    const selectedBrand = tile.getAttribute("data-brand");
+    brandSelect.value = selectedBrand;
+    brandSelect.dispatchEvent(new Event("change"));
+  });
+});
+
+// Update FSP format & Hint berdasarkan Brand yang dipilih
+function updateFspFormat(brand) {
+  if (!fspInput || !fspHint) return;
+
+  switch (brand) {
+    case "Huawei":
+      fspInput.placeholder = "Contoh: 0/1/2/1";
+      fspHint.textContent = "Format Huawei: Frame/Slot/Port/ONT_ID (4 bagian, contoh: 0/1/2/1)";
+      break;
+    case "Raisecom":
+      fspInput.placeholder = "Contoh: 0/1/1";
+      fspHint.textContent = "Format Raisecom: Frame/Slot/ONT_ID (3 bagian, contoh: 0/1/1)";
+      break;
+    case "ZTE_C320":
+      fspInput.placeholder = "Contoh: 0/1/2/1";
+      fspHint.textContent = "Format ZTE C320: Frame/Slot/Port/ONT_ID (4 bagian, contoh: 0/1/2/1)";
+      break;
+    case "ZTE_C610":
+      fspInput.placeholder = "Contoh: 0/1/2/1";
+      fspHint.textContent = "Format ZTE C610: Frame/Slot/Port/ONT_ID (4 bagian, contoh: 0/1/2/1)";
+      break;
+    case "BDCOM":
+      fspInput.placeholder = "Contoh: 1/2";
+      fspHint.textContent = "Format BDCOM: Frame/Slot (2 bagian, contoh: 1/2)";
+      break;
+    default:
+      fspInput.placeholder = "Pilih brand terlebih dahulu";
+      fspHint.textContent = "Format FSP akan menyesuaikan brand yang dipilih";
+      break;
+  }
+}
+
+// Helper Validasi Hanya Angka (VLAN & Line Profile)
+function validateNumericField(inputElem, fieldName) {
+  if (!inputElem) return true;
+  const val = inputElem.value.trim();
+  if (val === "") {
+    inputElem.style.borderColor = "";
+    inputElem.title = "";
+    return true;
+  }
+  const isDigitsOnly = /^\d+$/.test(val);
+  if (!isDigitsOnly) {
+    inputElem.style.borderColor = "red";
+    inputElem.title = `❌ ${fieldName} harus berupa angka saja!`;
+  } else {
+    inputElem.style.borderColor = "";
+    inputElem.title = "";
+  }
+  return isDigitsOnly;
+}
+
+const vlanInput = document.getElementById("vlan");
+if (vlanInput) {
+  vlanInput.addEventListener("input", () => validateNumericField(vlanInput, "VLAN"));
+}
+
+// Event handler Perubahan Brand OLT
 brandSelect.addEventListener("change", () => {
   const selected = brandSelect.value;
+
+  // Sync state aktif pada Brand Tiles
+  brandTiles.forEach(tile => {
+    if (tile.getAttribute("data-brand") === selected) {
+      tile.classList.add("active");
+    } else {
+      tile.classList.remove("active");
+    }
+  });
+
   dynamicFields.innerHTML = "";
 
-  if (selected === "Huawei") {
-    dynamicFields.innerHTML = `
-      <label>Service-Port</label>
-      <input type="text" id="servicePort" placeholder="Contoh: 3300,2123" required>
-      <label>Nama Line Profile</label>
-      <input type="text" id="lineProfileHuawei" placeholder="Misal: NEWAP" required>
-    `;
-  } else if (selected === "Raisecom") {
-    dynamicFields.innerHTML = `
-      <label>Line Profile ID</label>
-      <input type="text" id="lineProfileRaisecom" placeholder="Misal: 1" required>
-    `;
+  if (selected) {
+    // Tampilkan form konfigurasi jika brand dipilih
+    if (formContent) formContent.classList.remove("hidden");
+
+    // Form fields spesifik brand
+    if (selected === "Huawei") {
+      dynamicFields.innerHTML = `
+        <label>Service-Port (Maksimal 2 Port)</label>
+        <input type="text" id="servicePort" placeholder="Contoh: 3300 atau 3300, 2123 (Maksimal 2 Service Port)" required>
+        <span class="field-hint">Masukkan 1 atau 2 Service Port dipisahkan koma/spasi (Maksimal 2 Service Port)</span>
+        <label>Nama Line Profile</label>
+        <input type="text" id="lineProfileHuawei" placeholder="Misal: NEWAP" required>
+      `;
+    } else if (selected === "Raisecom") {
+      dynamicFields.innerHTML = `
+        <label>Line Profile ID (Angka saja)</label>
+        <input type="text" id="lineProfileRaisecom" placeholder="Misal: 1" required>
+        <span class="field-hint">Line Profile ID wajib berupa angka saja</span>
+      `;
+      const lpElem = document.getElementById("lineProfileRaisecom");
+      if (lpElem) {
+        lpElem.addEventListener("input", () => validateNumericField(lpElem, "Line Profile ID"));
+      }
+    }
+
+    // Update FSP format & Hint
+    updateFspFormat(selected);
+  } else {
+    // Sembunyikan form jika tidak ada brand yang dipilih
+    if (formContent) formContent.classList.add("hidden");
+    updateFspFormat("");
+    document.getElementById("output").style.display = "none";
   }
 });
+
 
 // Validasi real-time SN berdasarkan brand
 const snInput = document.getElementById("sn");
@@ -89,12 +191,19 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
   const nama = document.getElementById("nama").value.toUpperCase().replace(/\s+/g, ".");
   const brand = brandSelect.value;
   const fspInput = document.getElementById("fsp").value;
-  const vlan = document.getElementById("vlan").value;
+  const vlan = document.getElementById("vlan").value.trim();
   const password = document.getElementById("password").value;
   const isReplace = document.getElementById("replace").value === "true";
 
   if (!sid || !sn || !nama || !fspInput || !vlan || !password) {
     alert("⚠️ Semua kolom wajib diisi!!! .");
+    return;
+  }
+
+  // Validasi VLAN Hanya Boleh Angka
+  if (!/^\d+$/.test(vlan)) {
+    alert("❌ Form ditolak! VLAN harus berupa angka saja (contoh: 2900).");
+    document.getElementById("output").style.display = "none";
     return;
   }
 
@@ -130,7 +239,7 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
   // Huawei
   if (brand === "Huawei") {
     const servicePort = document.getElementById("servicePort")?.value;
-    const lineProfile = document.getElementById("lineProfileHuawei")?.value;
+    const lineProfile = document.getElementById("lineProfileHuawei")?.value.trim();
 
     if (!servicePort || !lineProfile) {
       alert("Harap isi Service-Port dan Line Profile untuk OLT Huawei.");
@@ -141,6 +250,12 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
       .split(/[\s\n,]+/)
       .map(item => item.trim())
       .filter(item => item !== "");
+
+    if (servicePorts.length > 2) {
+      alert("❌ Form ditolak! Maksimal hanya boleh memasukkan 2 Service Port (contoh: 3300, 2123).");
+      document.getElementById("output").style.display = "none";
+      return;
+    }
 
     config += `config\n`;
     if (isReplace) {
@@ -176,17 +291,9 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
 
     config += `quit\n\n`;
 
-    if (servicePorts.length > 0) {
-      config += `service-port ${servicePorts[0]} vlan ${vlan} gpon ${f}/${s}/${p} ont ${ont_id} gemport 1 multi-service user-vlan ${vlan} tag-transform translate\n\n`;
-    } else {
-      config += `service-port vlan ${vlan} gpon ${f}/${s}/${p} ont ${ont_id} gemport 1 multi-service user-vlan ${vlan} tag-transform translate\n\n`;
-    }
+    config += `service-port vlan ${vlan} gpon ${f}/${s}/${p} ont ${ont_id} gemport 1 multi-service user-vlan ${vlan} tag-transform translate\n\n`;
 
-    if (servicePorts.length > 1) {
-      config += `service-port ${servicePorts[1]} vlan 2989 gpon ${f}/${s}/${p} ont ${ont_id} gemport 2 multi-service user-vlan 2989 tag-transform translate\n\n`;
-    } else {
-      config += `service-port vlan 2989 gpon ${f}/${s}/${p} ont ${ont_id} gemport 2 multi-service user-vlan 2989 tag-transform translate\n\n`;
-    }
+    config += `service-port vlan 2989 gpon ${f}/${s}/${p} ont ${ont_id} gemport 2 multi-service user-vlan 2989 tag-transform translate\n\n`;
 
     config += `save`;
 
@@ -194,7 +301,14 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
 
   // Raisecom
   else if (brand === "Raisecom") {
-    const lineProfile = document.getElementById("lineProfileRaisecom")?.value;
+    const lineProfile = document.getElementById("lineProfileRaisecom")?.value.trim();
+
+    if (!lineProfile || !/^\d+$/.test(lineProfile)) {
+      alert("❌ Form ditolak! Line Profile ID Raisecom harus berupa angka saja (contoh: 1).");
+      document.getElementById("output").style.display = "none";
+      return;
+    }
+
     const isZTESN = sn.startsWith("ZTE");
 
     config += `config\n`;
@@ -265,6 +379,7 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
     // config += `dhcp-ip ethuni eth_0/1 from-onu\n`;
 
     config += `end\n`;
+    config += `save\n`;
   }
 
   // ZTE_C610
@@ -317,6 +432,7 @@ document.getElementById("regisForm").addEventListener("submit", function (e) {
     config += `dhcp-ip ethuni eth_0/1 from-onu\n`;
     config += `dhcp-ip ethuni eth_0/2 from-onu\n`;
     config += `end\n`;
+    config += `save\n`;
   }
 
   // BDCOM
@@ -373,6 +489,8 @@ function copyConfig() {
 // Tombol Reset
 document.getElementById("resetBtn").addEventListener("click", () => {
   document.getElementById("regisForm").reset();
+  brandSelect.value = "";
+  brandSelect.dispatchEvent(new Event("change"));
   document.getElementById("output").style.display = "none";
   document.getElementById("configResult").textContent = "";
   document.getElementById("dynamicFields").innerHTML = "";

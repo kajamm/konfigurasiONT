@@ -50,13 +50,7 @@
       <h1 class="hero-title">Konfigurasi <span>Registrasi ONT</span></h1>
 
 
-      <div class="vendor-pills">
-        <span class="vendor-tag"><i class="fa-solid fa-server"></i> Huawei</span>
-        <span class="vendor-tag"><i class="fa-solid fa-server"></i> Raisecom</span>
-        <span class="vendor-tag"><i class="fa-solid fa-server"></i> ZTE C320</span>
-        <span class="vendor-tag"><i class="fa-solid fa-server"></i> ZTE C610</span>
-        <span class="vendor-tag"><i class="fa-solid fa-server"></i> BDCOM</span>
-      </div>
+
     </div>
   </section>
 
@@ -64,149 +58,199 @@
   <main class="main-wrapper">
     <form id="regisForm" class="form-layout">
 
-      <!-- Card 1: OLT Brand & Customer Metadata -->
-      <article class="card">
+      <!-- Card 1: OLT Brand Selection (Shown Initially) -->
+      <article class="card brand-selection-card">
         <div class="card-header">
           <div class="card-header-icon">
-            <i class="fa-solid fa-sliders"></i>
+            <i class="fa-solid fa-building-columns"></i>
           </div>
           <div>
-            <h2 class="card-title">General & Customer Details</h2>
-            <p class="card-subtitle">Pilih vendor OLT dan identitas pelanggan</p>
+            <h2 class="card-title">Pilih Brand OLT</h2>
+            <p class="card-subtitle">Silakan pilih vendor OLT untuk membuka form konfigurasi</p>
           </div>
         </div>
 
-        <div class="form-grid">
-          <!-- Brand Select -->
-          <div class="form-group form-grid-full">
-            <label for="brand">
-              <i class="fa-solid fa-building-columns"></i> Brand OLT
-            </label>
-            <select id="brand" required>
-              <option value="">-- Pilih Brand --</option>
-              <option value="Huawei">Huawei</option>
-              <option value="Raisecom">Raisecom</option>
-              <option value="ZTE_C320">ZTE C320</option>
-              <option value="ZTE_C610">ZTE C610</option>
-              <option value="BDCOM">BDCOM</option>
-            </select>
+        <!-- Brand Tiles Grid -->
+        <div class="brand-grid">
+          <div class="brand-tile" data-brand="Huawei">
+            <div class="brand-tile-icon"><i class="fa-solid fa-server"></i></div>
+            <div class="brand-tile-name">Huawei</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
           </div>
+          <div class="brand-tile" data-brand="Raisecom">
+            <div class="brand-tile-icon"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="brand-tile-name">Raisecom</div>
+            <div class="brand-tile-desc">F/S/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="ZTE_C320">
+            <div class="brand-tile-icon"><i class="fa-solid fa-microchip"></i></div>
+            <div class="brand-tile-name">ZTE C320</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="ZTE_C610">
+            <div class="brand-tile-icon"><i class="fa-solid fa-cubes"></i></div>
+            <div class="brand-tile-name">ZTE C610</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="BDCOM">
+            <div class="brand-tile-icon"><i class="fa-solid fa-ethernet"></i></div>
+            <div class="brand-tile-name">BDCOM</div>
+            <div class="brand-tile-desc">F/S</div>
+          </div>
+        </div>
 
-          <!-- Customer Name -->
-          <div class="form-group">
-            <label for="nama">
-              <i class="fa-solid fa-user"></i> Customer Name
-            </label>
-            <input type="text" id="nama" placeholder="Masukkan nama pelanggan" required />
-          </div>
-
-          <!-- Service ID (SID) -->
-          <div class="form-group">
-            <label for="sid">
-              <i class="fa-solid fa-id-card"></i> SID (Service ID)
-            </label>
-            <input type="text" id="sid" placeholder="Contoh: 16258930" required />
-          </div>
+        <!-- Brand Select Dropdown -->
+        <div class="form-group" style="margin-top: 1.25rem;">
+          <label for="brand">
+            <i class="fa-solid fa-sliders"></i> Dropdown Brand OLT
+          </label>
+          <select id="brand" required>
+            <option value="">-- Pilih Brand --</option>
+            <option value="Huawei">Huawei</option>
+            <option value="Raisecom">Raisecom</option>
+            <option value="ZTE_C320">ZTE C320</option>
+            <option value="ZTE_C610">ZTE C610</option>
+            <option value="BDCOM">BDCOM</option>
+          </select>
         </div>
       </article>
 
-      <!-- Card 2: Security & Credentials -->
-      <article class="card">
-        <div class="card-header">
-          <div class="card-header-icon">
-            <i class="fa-solid fa-key"></i>
+      <!-- Main Form Body (Hidden initially until brand is selected) -->
+      <div id="formContent" class="form-content-wrapper hidden">
+
+        <!-- Card: Customer Metadata -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div>
+              <h2 class="card-title">Customer Details</h2>
+              <p class="card-subtitle">Identitas dan Service ID pelanggan</p>
+            </div>
           </div>
-          <div>
-            <h2 class="card-title">Authentication & Password</h2>
-            <p class="card-subtitle">Atur kredensial akses PPPoE</p>
+
+          <div class="form-grid">
+            <!-- Customer Name -->
+            <div class="form-group">
+              <label for="nama">
+                <i class="fa-solid fa-user"></i> Customer Name
+              </label>
+              <input type="text" id="nama" placeholder="Masukkan nama pelanggan" required />
+            </div>
+
+            <!-- Service ID (SID) -->
+            <div class="form-group">
+              <label for="sid">
+                <i class="fa-solid fa-id-card"></i> SID (Service ID)
+              </label>
+              <input type="text" id="sid" placeholder="Contoh: 16258930" required />
+            </div>
           </div>
+        </article>
+
+        <!-- Card 2: Security & Credentials -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+              <h2 class="card-title">Authentication & Password</h2>
+              <p class="card-subtitle">Atur kredensial akses PPPoE</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Auto Password Toggle -->
+            <div class="form-group">
+              <label for="autoPassword">
+                <i class="fa-solid fa-calendar-check"></i> Password Otomatis Hari Ini?
+              </label>
+              <select id="autoPassword">
+                <option value="no">Tidak</option>
+                <option value="yes">Ya</option>
+              </select>
+            </div>
+
+            <!-- PPPoE Password -->
+            <div class="form-group">
+              <label for="password">
+                <i class="fa-solid fa-lock"></i> Password PPPoE
+              </label>
+              <input type="text" id="password" placeholder="Password PPPoE" readonly />
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3: Network & Hardware Settings -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <div>
+              <h2 class="card-title">PON & Port Configuration</h2>
+              <p class="card-subtitle">Spesifikasi Serial Number, VLAN, dan Interface</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Serial Number -->
+            <div class="form-group form-grid-full">
+              <label for="sn">
+                <i class="fa-solid fa-barcode"></i> Serial Number (SN)
+              </label>
+              <input type="text" id="sn" placeholder="Masukkan Serial Number ONT" required />
+              <span id="snHint" class="field-hint">Huawei (16 Karakter HEX), Raisecom/ZTE (Prefix
+                RCMG/ZTE/AIS/RTEG)</span>
+            </div>
+
+            <!-- F/S/P/ONT ID -->
+            <div class="form-group">
+              <label for="fsp">
+                <i class="fa-solid fa-network-wired"></i> F/S/P/ONT ID
+              </label>
+              <input type="text" id="fsp" placeholder="Pilih brand terlebih dahulu" required />
+              <span id="fspHint" class="field-hint">Format FSP akan menyesuaikan brand yang dipilih</span>
+            </div>
+
+            <!-- VLAN -->
+            <div class="form-group">
+              <label for="vlan">
+                <i class="fa-solid fa-ethernet"></i> VLAN
+              </label>
+              <input type="text" id="vlan" placeholder="Contoh: 2900" required />
+              <span id="vlanHint" class="field-hint">Wajib berupa angka (contoh: 2900)</span>
+            </div>
+
+            <!-- Replace ONT Select -->
+            <div class="form-group form-grid-full">
+              <label for="replace">
+                <i class="fa-solid fa-arrows-rotate"></i> Ganti ONT ? (Replace)
+              </label>
+              <select id="replace">
+                <option value="false">Tidak</option>
+                <option value="true">Ya</option>
+              </select>
+            </div>
+
+            <!-- Dynamic Fields Container (Populated by script.js) -->
+            <div id="dynamicFields"></div>
+          </div>
+        </article>
+
+        <!-- Action Toolbar -->
+        <div class="action-toolbar">
+          <button type="submit">
+            <i class="fa-solid fa-rocket"></i> Generate Konfigurasi
+          </button>
+          <button type="button" id="resetBtn">
+            <i class="fa-solid fa-rotate-left"></i> Reset Konfigurasi
+          </button>
         </div>
 
-        <div class="form-grid">
-          <!-- Auto Password Toggle -->
-          <div class="form-group">
-            <label for="autoPassword">
-              <i class="fa-solid fa-calendar-check"></i> Password Otomatis Hari Ini?
-            </label>
-            <select id="autoPassword">
-              <option value="no">Tidak</option>
-              <option value="yes">Ya</option>
-            </select>
-          </div>
-
-          <!-- PPPoE Password -->
-          <div class="form-group">
-            <label for="password">
-              <i class="fa-solid fa-lock"></i> Password PPPoE
-            </label>
-            <input type="text" id="password" placeholder="Password PPPoE" readonly />
-          </div>
-        </div>
-      </article>
-
-      <!-- Card 3: Network & Hardware Settings -->
-      <article class="card">
-        <div class="card-header">
-          <div class="card-header-icon">
-            <i class="fa-solid fa-diagram-project"></i>
-          </div>
-          <div>
-            <h2 class="card-title">PON & Port Configuration</h2>
-            <p class="card-subtitle">Spesifikasi Serial Number, VLAN, dan Interface</p>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <!-- Serial Number -->
-          <div class="form-group form-grid-full">
-            <label for="sn">
-              <i class="fa-solid fa-barcode"></i> Serial Number (SN)
-            </label>
-            <input type="text" id="sn" placeholder="Masukkan Serial Number ONT" required />
-            <span class="field-hint">Huawei (16 Karakter HEX), Raisecom/ZTE (Prefix RCMG/ZTE/AIS/RTEG)</span>
-          </div>
-
-          <!-- F/S/P/ONT ID -->
-          <div class="form-group">
-            <label for="fsp">
-              <i class="fa-solid fa-network-wired"></i> F/S/P/ONT ID
-            </label>
-            <input type="text" id="fsp" placeholder="Contoh: 0/1/2/1 & 0/1/1 & 3/4" required />
-          </div>
-
-          <!-- VLAN -->
-          <div class="form-group">
-            <label for="vlan">
-              <i class="fa-solid fa-ethernet"></i> VLAN
-            </label>
-            <input type="text" id="vlan" placeholder="Contoh: 2900" required />
-          </div>
-
-          <!-- Replace ONT Select -->
-          <div class="form-group form-grid-full">
-            <label for="replace">
-              <i class="fa-solid fa-arrows-rotate"></i> Ganti ONT ? (Replace)
-            </label>
-            <select id="replace">
-              <option value="false">Tidak</option>
-              <option value="true">Ya</option>
-            </select>
-          </div>
-
-          <!-- Dynamic Fields Container (Populated by script.js) -->
-          <div id="dynamicFields"></div>
-        </div>
-      </article>
-
-      <!-- Action Toolbar -->
-      <div class="action-toolbar">
-        <button type="submit">
-          <i class="fa-solid fa-rocket"></i> Generate Konfigurasi
-        </button>
-        <button type="button" id="resetBtn">
-          <i class="fa-solid fa-rotate-left"></i> Reset Konfigurasi
-        </button>
-      </div>
+      </div><!-- End #formContent -->
     </form>
 
     <!-- Script Output Terminal Section -->
