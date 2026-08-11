@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Konfigurasi ONT - Enterprise Provisioning Tool</title>
+
+  <!-- Typography & Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Sticky Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="brand-wrapper">
+        <div class="brand-icon">
+          <i class="fa-solid font-awesome fa-network-wired"></i>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">ONT Config Studio</span>
+          <span class="brand-subtitle">Provisioning Engine v2.5</span>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <button type="button" id="themeToggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <span class="status-badge">
+          <span class="status-dot"></span>
+          System Operational
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Konfigurasi <span>Registrasi ONT</span></h1>
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <section class="step-indicator-section">
+    <div class="step-container">
+      <div class="step-item step-active" id="step1">
+        <div class="step-circle">
+          <span class="step-num">1</span>
+          <i class="fa-solid fa-check step-check"></i>
+        </div>
+        <div class="step-label">Pilih Brand OLT</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-item" id="step2">
+        <div class="step-circle">
+          <span class="step-num">2</span>
+          <i class="fa-solid fa-check step-check"></i>
+        </div>
+        <div class="step-label">Isi Data Konfigurasi</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-item" id="step3">
+        <div class="step-circle">
+          <span class="step-num">3</span>
+          <i class="fa-solid fa-check step-check"></i>
+        </div>
+        <div class="step-label">Generate Script</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Workspace -->
+  <main class="main-wrapper">
+    <form id="regisForm" class="form-layout" novalidate>
+
+      <!-- Card 1: OLT Brand Selection -->
+      <article class="card brand-selection-card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div>
+            <h2 class="card-title">Pilih Brand OLT</h2>
+            <p class="card-subtitle">Klik tile vendor OLT untuk membuka form konfigurasi</p>
+          </div>
+        </div>
+
+        <!-- Brand Tiles Grid -->
+        <div class="brand-grid">
+          <div class="brand-tile" data-brand="Huawei">
+            <div class="brand-tile-icon"><i class="fa-solid fa-server"></i></div>
+            <div class="brand-tile-name">Huawei</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="Raisecom">
+            <div class="brand-tile-icon"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="brand-tile-name">Raisecom</div>
+            <div class="brand-tile-desc">F/S/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="ZTE_C320">
+            <div class="brand-tile-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="brand-tile-name">ZTE C320</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="ZTE_C610">
+            <div class="brand-tile-icon"><i class="fa-solid fa-cubes"></i></div>
+            <div class="brand-tile-name">ZTE C610</div>
+            <div class="brand-tile-desc">F/S/P/ONT_ID</div>
+          </div>
+          <div class="brand-tile" data-brand="BDCOM">
+            <div class="brand-tile-icon"><i class="fa-solid fa-microchip"></i></div>
+            <div class="brand-tile-name">BDCOM</div>
+            <div class="brand-tile-desc">F/S (Tanpa P)</div>
+          </div>
+        </div>
+
+        <!-- Brand Select (Hidden — dikendalikan oleh Brand Tiles) -->
+        <select id="brand" required class="brand-select-hidden" aria-hidden="true" tabindex="-1">
+          <option value="">-- Pilih Brand --</option>
+          <option value="Huawei">Huawei</option>
+          <option value="Raisecom">Raisecom</option>
+          <option value="ZTE_C320">ZTE C320</option>
+          <option value="ZTE_C610">ZTE C610</option>
+          <option value="BDCOM">BDCOM</option>
+        </select>
+      </article>
+
+
+
+      <!-- Main Form Body (Hidden initially until brand is selected) -->
+      <div id="formContent" class="form-content-wrapper hidden">
+
+        <!-- Card: Customer Metadata -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div>
+              <h2 class="card-title">Customer Details</h2>
+              <p class="card-subtitle">Identitas dan Service ID pelanggan</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Customer Name -->
+            <div class="form-group">
+              <label for="nama">
+                <i class="fa-solid fa-user"></i> Customer Name
+              </label>
+              <input type="text" id="nama" placeholder="Masukkan nama pelanggan" required />
+            </div>
+
+            <!-- Service ID (SID) -->
+            <div class="form-group">
+              <label for="sid">
+                <i class="fa-solid fa-id-card"></i> SID (Service ID)
+              </label>
+              <input type="text" id="sid" placeholder="Contoh: 16258930" required />
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2: Security & Credentials -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+              <h2 class="card-title">Authentication & Password</h2>
+              <p class="card-subtitle">Atur kredensial akses PPPoE</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Auto Password Toggle -->
+            <div class="form-group">
+              <label for="autoPassword">
+                <i class="fa-solid fa-calendar-check"></i> Password Otomatis Hari Ini?
+              </label>
+              <select id="autoPassword">
+                <option value="no">Tidak — Isi Manual</option>
+                <option value="yes">Ya — Gunakan Tanggal Hari Ini</option>
+              </select>
+            </div>
+
+            <!-- PPPoE Password -->
+            <div class="form-group">
+              <label for="password">
+                <i class="fa-solid fa-lock"></i> Password PPPoE
+              </label>
+              <input type="text" id="password" placeholder="Masukkan password PPPoE" />
+              <span class="field-hint" id="passwordHint">Pilih "Ya" untuk auto-isi dengan tanggal hari ini</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3: Network & Hardware Settings -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <div>
+              <h2 class="card-title">PON & Port Configuration</h2>
+              <p class="card-subtitle">Spesifikasi Serial Number, VLAN, dan Interface</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- Serial Number -->
+            <div class="form-group form-grid-full">
+              <label for="sn">
+                <i class="fa-solid fa-barcode"></i> Serial Number (SN)
+              </label>
+              <input type="text" id="sn" placeholder="Masukkan Serial Number ONT" required />
+              <span id="snHint" class="field-hint">Huawei (16 Karakter HEX), Raisecom/ZTE (Prefix RCMG/ZTE/AIS/RTEG)</span>
+            </div>
+
+            <!-- F/S/P/ONT ID -->
+            <div class="form-group">
+              <label for="fsp">
+                <i class="fa-solid fa-network-wired"></i> F/S/P/ONT ID
+              </label>
+              <input type="text" id="fsp" placeholder="Pilih brand terlebih dahulu" required />
+              <span id="fspHint" class="field-hint">Format FSP akan menyesuaikan brand yang dipilih</span>
+            </div>
+
+            <!-- VLAN -->
+            <div class="form-group">
+              <label for="vlan">
+                <i class="fa-solid fa-ethernet"></i> VLAN
+              </label>
+              <input type="text" id="vlan" placeholder="Contoh: 2900" required />
+              <span id="vlanHint" class="field-hint">Wajib berupa angka (contoh: 2900)</span>
+            </div>
+
+            <!-- Replace ONT Select -->
+            <div class="form-group form-grid-full">
+              <label for="replace">
+                <i class="fa-solid fa-arrows-rotate"></i> Ganti ONT ? (Replace)
+              </label>
+              <select id="replace">
+                <option value="false">Tidak — Registrasi Baru</option>
+                <option value="true">Ya — Ganti ONT Lama</option>
+              </select>
+            </div>
+
+            <!-- Dynamic Fields Container (Populated by script.js) -->
+            <div id="dynamicFields"></div>
+          </div>
+        </article>
+
+        <!-- Advanced Settings Card: ACS / TR-069 (tampil hanya untuk ZTE & BDCOM) -->
+        <article class="card advanced-card" id="advancedCard" style="display:none;">
+          <div class="card-header advanced-card-header">
+            <div class="card-header-icon">
+              <i class="fa-solid fa-gear"></i>
+            </div>
+            <div class="advanced-header-text">
+              <h2 class="card-title">Advanced Settings — ACS / TR-069</h2>
+              <p class="card-subtitle">Konfigurasi server ACS untuk provisioning TR-069</p>
+            </div>
+            <button type="button" id="advancedToggle" class="advanced-toggle-btn" aria-expanded="false">
+              <i class="fa-solid fa-chevron-down toggle-icon"></i>
+              <span>Lihat Pengaturan</span>
+            </button>
+          </div>
+          <div id="advancedBody" class="advanced-body" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group form-grid-full">
+                <label for="acsUrl"><i class="fa-solid fa-server"></i> ACS URL</label>
+                <input type="text" id="acsUrl" value="http://192.168.30.5:5000/acs/" />
+                <span class="field-hint">URL server ACS untuk konfigurasi TR-069</span>
+              </div>
+              <div class="form-group">
+                <label for="acsUsername"><i class="fa-solid fa-user-shield"></i> ACS Username</label>
+                <input type="text" id="acsUsername" value="plniconplus" />
+              </div>
+              <div class="form-group">
+                <label for="acsPassword"><i class="fa-solid fa-shield-halved"></i> ACS Password</label>
+                <input type="text" id="acsPassword" value="PlnIconPlus!2025" />
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Action Toolbar -->
+        <div class="action-toolbar">
+          <div class="toolbar-options">
+            <label class="auto-copy-label" for="autoCopy">
+              <input type="checkbox" id="autoCopy" checked>
+              <span>Auto-copy setelah generate</span>
+            </label>
+          </div>
+          <div class="toolbar-buttons">
+            <button type="submit" id="generateBtn">
+              <i class="fa-solid fa-rocket"></i> Generate
+            </button>
+            <button type="button" id="bulkUploadBtn" class="bulk-btn">
+              <i class="fa-solid fa-file-csv"></i> Bulk CSV
+            </button>
+            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+
+            <button type="button" id="resetBtn">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+        </div>
+
+
+      </div><!-- End #formContent -->
+    </form>
+
+    <!-- Script Output Terminal Section -->
+    <section id="output" style="display:none;">
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="terminal-controls">
+            <span class="control-dot dot-red"></span>
+            <span class="control-dot dot-yellow"></span>
+            <span class="control-dot dot-green"></span>
+            <span class="terminal-title">
+              <i class="fa-solid fa-terminal"></i> olt-script-output.cli
+            </span>
+          </div>
+          <div class="terminal-actions">
+            <button type="button" class="download-btn" onclick="downloadConfig()">
+              <i class="fa-solid fa-file-arrow-down"></i> Unduh .cli
+            </button>
+            <button type="button" class="copy-btn" onclick="copyConfig()">
+              <i class="fa-regular fa-copy"></i> Salin
+            </button>
+          </div>
+        </div>
+        <pre id="configResult"></pre>
+      </div>
+    </section>
+
+
+  </main>
+
+  <!-- Enterprise Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+
+      <div class="footer-links">
+        <span><i class="fa-solid fa-shield-halved"></i> Internal Network Tool</span>
+        <span>•</span>
+        <span>All Rights Reserved</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Core JavaScript -->
+  <script src="script.js"></script>
+</body>
+
+</html>
