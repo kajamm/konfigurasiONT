@@ -23,50 +23,7 @@ export default function Terminal({ result, bulkConfigs, brand, sid }) {
     }
   }, [result]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleDownload = () => {
-    if (!result) return;
 
-    if (bulkConfigs && Object.keys(bulkConfigs).length > 0) {
-      // BULK MODE: unduh per brand
-      const ts = new Date().toISOString().split("T")[0];
-      let count = 0;
-      for (const [brandName, cfg] of Object.entries(bulkConfigs)) {
-        if (!cfg.trim()) continue;
-        const filename = `bulk-${brandName}-${ts}.cli`;
-        const blob = new Blob([cfg], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        count++;
-      }
-      const event = new CustomEvent('show-toast', { detail: { message: `${count} file konfigurasi (berdasarkan Brand) berhasil diunduh.`, type: "success" } });
-      window.dispatchEvent(event);
-    } else {
-      // SINGLE MODE
-      if (!brand) return;
-      const ts = new Date().toISOString().split("T")[0];
-      const sidPart = sid ? sid.trim() : 'ont';
-      const filename = `config-${brand}-${sidPart}-${ts}.cli`;
-
-      const blob = new Blob([result], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      const event = new CustomEvent('show-toast', { detail: { message: `File "${filename}" berhasil diunduh.`, type: "success" } });
-      window.dispatchEvent(event);
-    }
-  };
 
   return (
     <section id="output" className="fade-in">
@@ -90,9 +47,7 @@ export default function Terminal({ result, bulkConfigs, brand, sid }) {
               />
               <span>Auto-copy setelah generate</span>
             </label>
-            <button type="button" className="download-btn" onClick={handleDownload}>
-              <i className="fa-solid fa-file-arrow-down"></i> Unduh .cli
-            </button>
+
             <button type="button" className="copy-btn" onClick={handleCopy}>
               <i className="fa-regular fa-copy"></i> Salin
             </button>
